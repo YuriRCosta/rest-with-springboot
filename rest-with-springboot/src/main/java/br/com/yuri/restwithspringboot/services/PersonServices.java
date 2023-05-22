@@ -3,6 +3,7 @@ package br.com.yuri.restwithspringboot.services;
 import br.com.yuri.restwithspringboot.data.vo.v1.PersonVO;
 import br.com.yuri.restwithspringboot.exceptions.ResourceNotFoundException;
 import br.com.yuri.restwithspringboot.mapper.DozerMapper;
+import br.com.yuri.restwithspringboot.mapper.custom.PersonMapper;
 import br.com.yuri.restwithspringboot.model.Person;
 import br.com.yuri.restwithspringboot.repositories.PersonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,9 @@ import java.util.logging.Logger;
 public class PersonServices {
 
     private static final String MESSAGE_NO_RECORDS = "No records found for this ID";
+
+    @Autowired
+    PersonMapper mapper;
 
     @Autowired
     PersonRepository repository;
