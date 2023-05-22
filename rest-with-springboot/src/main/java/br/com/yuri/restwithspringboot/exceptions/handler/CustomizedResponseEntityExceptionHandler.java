@@ -1,6 +1,7 @@
 package br.com.yuri.restwithspringboot.exceptions.handler;
 
 import br.com.yuri.restwithspringboot.exceptions.ExceptionResponse;
+import br.com.yuri.restwithspringboot.exceptions.RequiredObjectIsNullException;
 import br.com.yuri.restwithspringboot.exceptions.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,6 +35,16 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
                 request.getDescription(false)
         );
         return new ResponseEntity<>(exceptionResponse, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(RequiredObjectIsNullException.class)
+    public final ResponseEntity<ExceptionResponse> handleBadRequestExceptions(Exception ex, WebRequest request) {
+        ExceptionResponse exceptionResponse = new ExceptionResponse(
+                new Date(),
+                ex.getMessage(),
+                request.getDescription(false)
+        );
+        return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_GATEWAY);
     }
 
 }
