@@ -1,10 +1,12 @@
 package br.com.yuri.restwithspringboot.config;
 
 import br.com.yuri.restwithspringboot.serialization.converter.YamlJackson2HttpMessageConverter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.List;
@@ -13,6 +15,9 @@ import java.util.List;
 public class WebConfig implements WebMvcConfigurer {
 
     private static final MediaType MEDIA_TYPE_YML = MediaType.valueOf("application/x-yaml");
+
+    @Value("${cors.originPatterns:default}")
+    private String corsOriginPattenrs = "";
 
     @Override
     public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
@@ -38,5 +43,11 @@ public class WebConfig implements WebMvcConfigurer {
                 .mediaType("x-yaml", MEDIA_TYPE_YML);
     }
 
-
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        var allowedOrigins = corsOriginPattenrs.split(",");
+        registry.addMapping("/**")
+                .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD", "TRACE", "CONNECT")
+                .allowedOrigins(allowedOrigins).allowCredentials(true);
+    }
 }
