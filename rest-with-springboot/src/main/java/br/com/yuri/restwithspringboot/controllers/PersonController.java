@@ -38,6 +38,22 @@ public class PersonController {
         return services.findById(id);
     }
 
+    @PatchMapping(value = "/{id}",
+            produces = {MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_YML})
+    @Operation(summary = "Disable a person recorded", description = "Disable a person recorded in the database",
+            tags = {"Person Endpoint"}, responses = {
+            @ApiResponse(responseCode = "200", description = "Success",
+                    content = @Content(schema = @Schema(implementation = PersonVO.class))),
+            @ApiResponse(responseCode = "204", description = "No Content", content = @Content),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Not Found", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal Error", content = @Content)})
+    public PersonVO disablePerson(@PathVariable(value = "id") Long id) {
+        return services.disablePerson(id);
+    }
+
+
     @PostMapping(
             produces = {MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_YML},
             consumes = {MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_YML})

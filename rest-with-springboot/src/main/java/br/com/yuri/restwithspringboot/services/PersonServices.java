@@ -8,6 +8,7 @@ import br.com.yuri.restwithspringboot.mapper.DozerMapper;
 import br.com.yuri.restwithspringboot.mapper.custom.PersonMapper;
 import br.com.yuri.restwithspringboot.model.Person;
 import br.com.yuri.restwithspringboot.repositories.PersonRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -64,6 +65,17 @@ public class PersonServices {
 
     public PersonVO findById(Long id) {
         logger.info("Finding one person!");
+        var entity = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(MESSAGE_NO_RECORDS));
+        var vo = DozerMapper.parseObject(entity, PersonVO.class);
+        vo.add(linkTo(methodOn(PersonController.class).findById(id)).withSelfRel());
+        return vo;
+    }
+
+    @Transactional
+    public PersonVO disablePerson(Long id) {
+        logger.info("Disabling one person!");
+        repository.disablePerson(id);
         var entity = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(MESSAGE_NO_RECORDS));
         var vo = DozerMapper.parseObject(entity, PersonVO.class);
