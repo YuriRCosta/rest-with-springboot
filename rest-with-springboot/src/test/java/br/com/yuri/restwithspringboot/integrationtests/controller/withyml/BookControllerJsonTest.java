@@ -5,6 +5,7 @@ import br.com.yuri.restwithspringboot.integrationtests.controller.withyml.mapper
 import br.com.yuri.restwithspringboot.integrationtests.testcontainers.AbstractIntegrationTest;
 import br.com.yuri.restwithspringboot.integrationtests.vo.AccountCredentialsVO;
 import br.com.yuri.restwithspringboot.integrationtests.vo.BookVO;
+import br.com.yuri.restwithspringboot.integrationtests.vo.PagedModelBook;
 import br.com.yuri.restwithspringboot.integrationtests.vo.TokenVO;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -21,9 +22,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
 
 import static io.restassured.RestAssured.given;
 
@@ -189,20 +188,21 @@ public class BookControllerJsonTest extends AbstractIntegrationTest {
     @Test
     @Order(5)
     public void testFindAll() throws JsonProcessingException {
-        var content = given().spec(specification)
+        var wrapper = given().spec(specification)
                 .config(RestAssuredConfig.config().encoderConfig(EncoderConfig.encoderConfig().encodeContentTypeAs(TestConfigs.CONTENT_TYPE_YAML, ContentType.TEXT)))
                 .accept(TestConfigs.CONTENT_TYPE_YAML)
                 .contentType(TestConfigs.CONTENT_TYPE_YAML)
+                .queryParams("page", 0, "size", 10, "direction", "asc")
                 .when()
                 .get()
                 .then()
                 .statusCode(200)
                 .extract()
                 .body()
-                .as(BookVO[].class, mapper);
+                .as(PagedModelBook.class, mapper);
                 //.as(new TypeRef<List<BookVO>>() {});
 
-        List<BookVO> books = Arrays.asList(content);
+        var books = wrapper.getContent();
         BookVO foundBookOne = books.get(0);
 
         Assertions.assertNotNull(foundBookOne.getPrice());
@@ -210,11 +210,11 @@ public class BookControllerJsonTest extends AbstractIntegrationTest {
         Assertions.assertNotNull(foundBookOne.getAuthor());
         Assertions.assertNotNull(foundBookOne.getLaunchDate());
 
-        Assertions.assertEquals(1, foundBookOne.getId());
+        Assertions.assertEquals(15, foundBookOne.getId());
 
-        Assertions.assertEquals("Michael C. Feathers", foundBookOne.getAuthor());
-        Assertions.assertEquals("Working effectively with legacy code", foundBookOne.getTitle());
-        Assertions.assertEquals(49.0, foundBookOne.getPrice());
+        Assertions.assertEquals("Aguinaldo Aragon Fernandes e Vladimir Ferraz de Abreu", foundBookOne.getAuthor());
+        Assertions.assertEquals("Implantando a governança de TI", foundBookOne.getTitle());
+        Assertions.assertEquals(54.0, foundBookOne.getPrice());
 
         BookVO foundBookTwo = books.get(1);
 
@@ -223,11 +223,11 @@ public class BookControllerJsonTest extends AbstractIntegrationTest {
         Assertions.assertNotNull(foundBookTwo.getAuthor());
         Assertions.assertNotNull(foundBookTwo.getLaunchDate());
 
-        Assertions.assertEquals(2, foundBookTwo.getId());
+        Assertions.assertEquals(9, foundBookTwo.getId());
 
-        Assertions.assertEquals("Ralph Johnson, Erich Gamma, John Vlissides e Richard Helm", foundBookTwo.getAuthor());
-        Assertions.assertEquals("Design Patterns", foundBookTwo.getTitle());
-        Assertions.assertEquals(45.0, foundBookTwo.getPrice());
+        Assertions.assertEquals("Brian Goetz e Tim Peierls", foundBookTwo.getAuthor());
+        Assertions.assertEquals("Java Concurrency in Practice", foundBookTwo.getTitle());
+        Assertions.assertEquals(80.0, foundBookTwo.getPrice());
     }
 
     @Test

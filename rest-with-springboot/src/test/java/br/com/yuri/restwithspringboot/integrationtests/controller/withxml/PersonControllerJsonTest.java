@@ -2,11 +2,8 @@ package br.com.yuri.restwithspringboot.integrationtests.controller.withxml;
 
 import br.com.yuri.restwithspringboot.configs.TestConfigs;
 import br.com.yuri.restwithspringboot.integrationtests.testcontainers.AbstractIntegrationTest;
-import br.com.yuri.restwithspringboot.integrationtests.vo.AccountCredentialsVO;
-import br.com.yuri.restwithspringboot.integrationtests.vo.PersonVO;
-import br.com.yuri.restwithspringboot.integrationtests.vo.TokenVO;
+import br.com.yuri.restwithspringboot.integrationtests.vo.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,8 +14,6 @@ import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.specification.RequestSpecification;
 import org.junit.jupiter.api.*;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import java.util.List;
 
 import static io.restassured.RestAssured.given;
 
@@ -220,6 +215,8 @@ public class PersonControllerJsonTest extends AbstractIntegrationTest {
     public void testFindAll() throws JsonProcessingException {
         var content = given().spec(specification)
                 .contentType(TestConfigs.CONTENT_TYPE_XML)
+                .accept(TestConfigs.CONTENT_TYPE_XML)
+                .queryParams("page", 0, "size", 10, "direction", "asc")
                 .when()
                 .get()
                 .then()
@@ -229,7 +226,8 @@ public class PersonControllerJsonTest extends AbstractIntegrationTest {
                 .asString();
                 //.as(new TypeRef<List<PersonVO>>() {});
 
-        List<PersonVO> people = mapper.readValue(content, new TypeReference<List<PersonVO>>() {});
+        PagedModelPerson wrapper = mapper.readValue(content, PagedModelPerson.class);
+        var people = wrapper.getContent();
         PersonVO foundPersonOne = people.get(0);
 
         Assertions.assertNotNull(foundPersonOne.getFirstName());
@@ -237,12 +235,12 @@ public class PersonControllerJsonTest extends AbstractIntegrationTest {
         Assertions.assertNotNull(foundPersonOne.getAddress());
         Assertions.assertNotNull(foundPersonOne.getGender());
 
-        Assertions.assertEquals(1, foundPersonOne.getId());
+        Assertions.assertEquals(586, foundPersonOne.getId());
 
-        Assertions.assertEquals("Yuri", foundPersonOne.getFirstName());
-        Assertions.assertEquals("Costa", foundPersonOne.getLastName());
-        Assertions.assertEquals("Sao Paulo", foundPersonOne.getAddress());
-        Assertions.assertEquals("Male", foundPersonOne.getGender());
+        Assertions.assertEquals("Abby", foundPersonOne.getFirstName());
+        Assertions.assertEquals("Martinovic", foundPersonOne.getLastName());
+        Assertions.assertEquals("61 Southridge Drive", foundPersonOne.getAddress());
+        Assertions.assertEquals("Female", foundPersonOne.getGender());
 
         PersonVO foundPersonTwo = people.get(1);
 
@@ -251,12 +249,12 @@ public class PersonControllerJsonTest extends AbstractIntegrationTest {
         Assertions.assertNotNull(foundPersonTwo.getAddress());
         Assertions.assertNotNull(foundPersonTwo.getGender());
 
-        Assertions.assertEquals(3, foundPersonTwo.getId());
+        Assertions.assertEquals(359, foundPersonTwo.getId());
 
-        Assertions.assertEquals("Yasmin", foundPersonTwo.getFirstName());
-        Assertions.assertEquals("Ferreira Dadda", foundPersonTwo.getLastName());
-        Assertions.assertEquals("Capao da Canoa", foundPersonTwo.getAddress());
-        Assertions.assertEquals("Female", foundPersonTwo.getGender());
+        Assertions.assertEquals("Abel", foundPersonTwo.getFirstName());
+        Assertions.assertEquals("Tukely", foundPersonTwo.getLastName());
+        Assertions.assertEquals("90635 Ridgeway Terrace", foundPersonTwo.getAddress());
+        Assertions.assertEquals("Male", foundPersonTwo.getGender());
     }
 
     @Test

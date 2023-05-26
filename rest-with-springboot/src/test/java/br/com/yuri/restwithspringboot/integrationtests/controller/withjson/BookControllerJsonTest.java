@@ -5,8 +5,8 @@ import br.com.yuri.restwithspringboot.data.vo.v1.security.AccountCredentialsVO;
 import br.com.yuri.restwithspringboot.integrationtests.testcontainers.AbstractIntegrationTest;
 import br.com.yuri.restwithspringboot.integrationtests.vo.BookVO;
 import br.com.yuri.restwithspringboot.integrationtests.vo.TokenVO;
+import br.com.yuri.restwithspringboot.integrationtests.vo.WrapperBookVO;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,7 +21,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 
 import static io.restassured.RestAssured.given;
 
@@ -185,6 +184,7 @@ public class BookControllerJsonTest extends AbstractIntegrationTest {
     public void testFindAll() throws JsonProcessingException {
         var content = given().spec(specification)
                 .contentType(TestConfigs.CONTENT_TYPE_JSON)
+                .queryParams("page", 0, "size", 10, "direction", "asc")
                 .when()
                 .get()
                 .then()
@@ -194,32 +194,33 @@ public class BookControllerJsonTest extends AbstractIntegrationTest {
                 .asString();
                 //.as(new TypeRef<List<BookVO>>() {});
 
-        List<BookVO> people = mapper.readValue(content, new TypeReference<List<BookVO>>() {});
-        BookVO foundBookOne = people.get(0);
+        WrapperBookVO wrapper = mapper.readValue(content, WrapperBookVO.class);
+        var books = wrapper.getEmbedded().getBooks();
+        BookVO foundBookOne = books.get(0);
 
         Assertions.assertNotNull(foundBookOne.getPrice());
         Assertions.assertNotNull(foundBookOne.getTitle());
         Assertions.assertNotNull(foundBookOne.getAuthor());
         Assertions.assertNotNull(foundBookOne.getLaunchDate());
 
-        Assertions.assertEquals(1, foundBookOne.getId());
+        Assertions.assertEquals(15, foundBookOne.getId());
 
-        Assertions.assertEquals("Michael C. Feathers", foundBookOne.getAuthor());
-        Assertions.assertEquals("Working effectively with legacy code", foundBookOne.getTitle());
-        Assertions.assertEquals(49.0, foundBookOne.getPrice());
+        Assertions.assertEquals("Aguinaldo Aragon Fernandes e Vladimir Ferraz de Abreu", foundBookOne.getAuthor());
+        Assertions.assertEquals("Implantando a governança de TI", foundBookOne.getTitle());
+        Assertions.assertEquals(54.0, foundBookOne.getPrice());
 
-        BookVO foundBookTwo = people.get(1);
+        BookVO foundBookTwo = books.get(1);
 
         Assertions.assertNotNull(foundBookTwo.getPrice());
         Assertions.assertNotNull(foundBookTwo.getTitle());
         Assertions.assertNotNull(foundBookTwo.getAuthor());
         Assertions.assertNotNull(foundBookTwo.getLaunchDate());
 
-        Assertions.assertEquals(2, foundBookTwo.getId());
+        Assertions.assertEquals(9, foundBookTwo.getId());
 
-        Assertions.assertEquals("Ralph Johnson, Erich Gamma, John Vlissides e Richard Helm", foundBookTwo.getAuthor());
-        Assertions.assertEquals("Design Patterns", foundBookTwo.getTitle());
-        Assertions.assertEquals(45.0, foundBookTwo.getPrice());
+        Assertions.assertEquals("Brian Goetz e Tim Peierls", foundBookTwo.getAuthor());
+        Assertions.assertEquals("Java Concurrency in Practice", foundBookTwo.getTitle());
+        Assertions.assertEquals(80.0, foundBookTwo.getPrice());
     }
 
     @Test

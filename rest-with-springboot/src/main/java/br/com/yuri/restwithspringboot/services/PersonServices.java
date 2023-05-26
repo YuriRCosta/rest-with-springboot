@@ -10,9 +10,13 @@ import br.com.yuri.restwithspringboot.model.Person;
 import br.com.yuri.restwithspringboot.repositories.PersonRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.logging.Logger;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -29,13 +33,21 @@ public class PersonServices {
     @Autowired
     PersonRepository repository;
 
+    @Autowired
+    PagedResourcesAssembler<PersonVO> assembler;
+
     private final Logger logger = Logger.getLogger(PersonServices.class.getName());
 
-    public List<PersonVO> findAll() {
+    public PagedModel<EntityModel<PersonVO>> findAll(Pageable pageable) {
         logger.info("Finding all persons!");
-        var people = DozerMapper.parseListObjects(repository.findAll(), PersonVO.class);
-        people.stream().forEach(p -> p.add(linkTo(methodOn(PersonController.class).findById(p.getKey())).withSelfRel()));
-        return people;
+
+        var personPage = repository.findAll(pageable);
+
+        var peopleVOPage = personPage.map(p -> DozerMapper.parseObject(p, PersonVO.class));
+        peopleVOPage.map(p -> p.add(linkTo(methodOn(PersonController.class).findById(p.getKey())).withSelfRel()));
+
+        Link link = linkTo(methodOn(PersonController.class).findAll(pageable.getPageNumber(), pageable.getPageSize(), "asc")).withSelfRel();
+        return assembler.toModel(peopleVOPage, link);
     }
 
     public PersonVO create(PersonVO person) {
@@ -61,6 +73,17 @@ public class PersonServices {
         var vo = DozerMapper.parseObject(repository.save(entity), PersonVO.class);
         vo.add(linkTo(methodOn(PersonController.class).findById(vo.getKey())).withSelfRel());
         return vo;
+    }
+
+    public PagedModel<EntityModel<PersonVO>> findPersonByName(String firstName, Pageable pageable) {
+        logger.info("Finding people by name!");
+        var personPage = repository.findPeopleByName(firstName, pageable);
+
+        var peopleVOPage = personPage.map(p -> DozerMapper.parseObject(p, PersonVO.class));
+        peopleVOPage.map(p -> p.add(linkTo(methodOn(PersonController.class).findById(p.getKey())).withSelfRel()));
+
+        Link link = linkTo(methodOn(PersonController.class).findAll(pageable.getPageNumber(), pageable.getPageSize(), "asc")).withSelfRel();
+        return assembler.toModel(peopleVOPage, link);
     }
 
     public PersonVO findById(Long id) {

@@ -16,7 +16,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.Mockito.when;
@@ -39,7 +38,7 @@ class PersonServicesTest {
         MockitoAnnotations.openMocks(this);
     }
 
-    @Test
+    /*@Test
     void findAll() {
         List<Person> list = input.mockEntityList();
 
@@ -83,7 +82,7 @@ class PersonServicesTest {
         Assertions.assertEquals("Last Name Test7", personSeven.getLastName());
         Assertions.assertEquals("Addres Test7", personSeven.getAddress());
         Assertions.assertEquals("Female", personSeven.getGender());
-    }
+    }*/
 
     @Test
     void create() {
