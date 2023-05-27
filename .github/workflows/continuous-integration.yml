@@ -25,11 +25,11 @@ jobs:
         distribution: 'adopt'
         cache: maven
     - name: Build with Maven
-      working-directory: ./rest-with-springboot/rest-with-springboot
+      working-directory: ./rest-with-springboot
       run: mvn clean package -DskipTests
       
     - name: Docker Compose Build
-      working-directory: ..
+      working-directory: .
       run: docker compose build
     
     - name: Push to Docker Hub Container Registry
