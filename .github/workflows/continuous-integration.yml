@@ -25,7 +25,6 @@ jobs:
         distribution: 'adopt'
         cache: maven
     - name: Build with Maven
-      working-directory: ./rest-with-springboot/rest-with-springboot
       run: mvn clean package -DskipTests
       
     - name: Docker Compose Build
