@@ -34,6 +34,7 @@ jobs:
     
     - name: Push to Docker Hub Container Registry
       run: docker tag ${{ secrets.DOCKER_USERNAME }}/rest-with-springboot:latest ${{ secrets.DOCKER_USERNAME }}/rest-with-springboot:${{ github.run_id }}
+           
            docker push ${{ secrets.DOCKER_USERNAME }}/rest-with-springboot:${{ github.run_id }}
            docker push ${{ secrets.DOCKER_USERNAME }}/rest-with-springboot:latest
     # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
