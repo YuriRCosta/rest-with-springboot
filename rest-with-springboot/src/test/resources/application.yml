@@ -3,7 +3,7 @@ server:
 cors:
   originPatterns: http://localhost:8080,https://teste.com.br
 file:
-  upload-fir: /Usuários/T-Gamer/UploadDir
+  upload-fir: /home/runner/work/rest-with-springboot/UploadDir
 security:
   jwt:
     token:
