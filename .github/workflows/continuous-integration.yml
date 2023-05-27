@@ -25,6 +25,7 @@ jobs:
         distribution: 'adopt'
         cache: maven
     - name: Build with Maven
+      working-directory: ..
       run: mvn clean package -DskipTests
       
     - name: Docker Compose Build
