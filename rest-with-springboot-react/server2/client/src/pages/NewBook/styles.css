@@ -1,0 +1,12 @@
+.page-container-new-book {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100vh;
+}
+
+.page-container-new-book .row {
+    margin-bottom: 15px;
+}

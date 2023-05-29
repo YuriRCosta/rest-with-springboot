@@ -1,0 +1,46 @@
+.btn:hover {
+    text-decoration: none;
+}
+
+.books-area ul .btn {
+    margin-right: 10px;
+}
+
+.cad {
+    margin: 0;
+}
+
+.book-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 50px;
+}
+
+.books-area {
+    color: #FFF;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 50px;
+}
+
+li {
+    background-color: #fff;
+    color: #2c3338;
+    list-style: none;
+    padding: 20px;
+    border-radius: 8px;
+    margin: 15px;
+    width: 500px;
+}
+
+ul {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+}
